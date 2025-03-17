@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Query,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { PostService } from './post.service';
 import { Post as PostEntity } from './post.entity';
 import {
@@ -10,6 +18,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { User } from '../user/user.entity';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -29,16 +38,19 @@ export class PostController {
     status: 201,
     description: 'The post has been successfully created.',
   })
-  async createPost(@Body() body: { title: string; content: string }) {
-    return this.postService.createPost(body.title, body.content);
+  async createPost(
+    @Req() req: { user: User },
+    @Body() body: { title: string; content: string },
+  ) {
+    return this.postService.createPost(body.title, body.content, req.user);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all posts' })
   @ApiQuery({ name: 'page', required: false, type: 'number' })
-  @ApiQuery({ name: 'limit', required: false, type: 'number' })
+  @ApiQuery({ name: 'pageSize', required: false, type: 'number' })
   @ApiResponse({ status: 200, description: 'Return all posts.' })
-  async getAllPosts(@Query('page') page = 1, @Query('limit') limit = 10) {
+  async getAllPosts(@Query('page') page = 1, @Query('pageSize') limit = 10) {
     return this.postService.getAllPosts(page, limit);
   }
 

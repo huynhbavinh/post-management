@@ -5,6 +5,8 @@ import {
   UseGuards,
   Request,
   Res,
+  Get,
+  HttpCode,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
@@ -64,16 +66,17 @@ export class UserController {
       return { message: 'Invalid credentials' };
     }
     // use cookie to store the token, and setup httpOnly and sameSite to prevent XSS attacks
-    res.cookie('token', token.access_token, {
-      httpOnly: true,
-      sameSite: 'strict',
+    res.cookie('token', token, {
+      httpOnly: true, // Set to `true` if running HTTPS
+      sameSite: 'lax', // Or 'none' if frontend and backend are on different domains
+      path: '/',
     });
     console.log('User token', token.access_token); // Log the token to the console for demo
     res.status(200).send({ message: 'User has been successfully logged in.' });
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('profile')
+  @Get('profile')
   @ApiOperation({ summary: 'Get user profile' })
   @ApiResponse({
     status: 200,
@@ -82,5 +85,19 @@ export class UserController {
   @ApiBearerAuth()
   getProfile(@Request() req: { user: User }) {
     return req.user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Logout a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'The user has been successfully logged out.',
+  })
+  @ApiBearerAuth()
+  logout(@Res() res: Response) {
+    res.clearCookie('token', { path: '/' });
+    res.send({ message: 'User has been successfully logged out.' });
   }
 }

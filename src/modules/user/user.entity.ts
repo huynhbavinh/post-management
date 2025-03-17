@@ -1,6 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BeforeInsert,
+  OneToMany,
+} from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { ApiProperty } from '@nestjs/swagger';
+import { Post } from '../post/post.entity';
 
 @Entity('users')
 export class User {
@@ -21,6 +28,9 @@ export class User {
   @Column()
   @ApiProperty({ example: 'password123', description: 'Password of the user' })
   password: string;
+
+  @OneToMany(() => Post, (post) => post.createdBy)
+  posts: Post[];
 
   @BeforeInsert()
   async hashPassword() {

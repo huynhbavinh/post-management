@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../user/user.entity'; // Đảm bảo đường dẫn đúng tới User entity
 
 @Entity()
 export class Post {
@@ -27,4 +34,12 @@ export class Post {
     description: 'Creation date of the post',
   })
   createdAt: Date;
+
+  @ManyToOne(() => User, (user) => user.posts)
+  @JoinColumn({ name: 'createdBy' })
+  @ApiProperty({
+    example: 1,
+    description: 'ID of the user who created the post',
+  })
+  createdBy: User;
 }

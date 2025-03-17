@@ -1,4 +1,5 @@
 import {
+  Get,
   Controller,
   Post,
   Delete,
@@ -45,13 +46,13 @@ export class LikesController {
     @Req()
     req: {
       user: {
-        userId: string;
+        id: string;
         email: string;
       };
     },
     @Body() likeDto: LikeDto,
   ) {
-    return this.likesService.likePost(req.user.userId, likeDto.postId);
+    return this.likesService.likePost(req.user.id, likeDto.postId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -73,16 +74,16 @@ export class LikesController {
     @Req()
     req: {
       user: {
-        userId: string;
+        id: string;
         email: string;
       };
     },
     @Body() unlikeDto: UnlikeDto,
   ) {
-    return this.likesService.unlikePost(req.user.userId, unlikeDto.postId);
+    return this.likesService.unlikePost(req.user.id, unlikeDto.postId);
   }
 
-  @Post(':postId/count')
+  @Get(':postId/count')
   @ApiOperation({ summary: 'Get like count for a post' })
   @ApiParam({ name: 'postId', required: true, description: 'ID of the post' })
   @ApiResponse({
@@ -91,5 +92,25 @@ export class LikesController {
   })
   async getLikeCount(@Param('postId') postId: string) {
     return await this.likesService.getLikesCount(postId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('user')
+  @ApiOperation({ summary: 'Get user likes' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return the list of posts liked by the user.',
+  })
+  @ApiBearerAuth()
+  async getUserLikes(
+    @Req()
+    req: {
+      user: {
+        id: string;
+        email: string;
+      };
+    },
+  ) {
+    return this.likesService.getUserLikes(req.user.id);
   }
 }

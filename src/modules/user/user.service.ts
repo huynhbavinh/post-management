@@ -30,6 +30,9 @@ export class UserService {
   }
 
   async createUser(email: string, password: string): Promise<User> {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      throw new Error('Invalid email address');
+    }
     const user = this.userRepository.create({ email, password });
     return await this.userRepository.save(user);
   }
