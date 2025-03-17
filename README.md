@@ -19,7 +19,7 @@ This project is a backend service built using the [NestJS](https://nestjs.com/) 
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js (v22 or higher)
 - Docker and Docker Compose
 
 ### Environment Variables

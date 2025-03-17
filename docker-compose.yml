@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: node:16
+    image: node:22
     container_name: product_assignment_app
     working_dir: /app
     volumes:
